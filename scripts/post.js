@@ -1,11 +1,5 @@
-// const API_BASE_URL =
-//   window.location.hostname === "127.0.0.1"
-//     ? "http://127.0.0.1:3001"
-//     : "http://localhost:3001";
-
 const API_BASE_URL =
-  window.location.hostname === "127.0.0.1" ||
-  window.location.hostname === "localhost"
+  window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost"
     ? "http://127.0.0.1:3001"
     : "https://ctm-api.vercel.app/";
 
@@ -42,6 +36,7 @@ function showAlertServer(type, topic, message) {
     toastr.info(message, topic);
   }
 }
+
 async function loadAllLeaderboard() {
   console.log("Loading all leaderboard...");
   try {
@@ -63,6 +58,7 @@ async function loadAllLeaderboard() {
     return null;
   }
 }
+
 async function loadLeaderboard() {
   try {
     const response = await fetch(`${API_BASE_URL}/leaderboard`, {
@@ -98,17 +94,12 @@ async function loadLeaderboard() {
 }
 
 function updateLeaderboard(data) {
-  data.sort((a, b) => b.score - a.score);
-  console.log(data.sort((a, b) => b.score - a.score));
+  const sortedData = [...data].sort((a, b) => b.score - a.score);
+  console.log(sortedData);
 
-  console.log(data[0].username);
-
-  document.getElementById("player1-name").textContent = data[0].username;
-  data.slice(0, 3).forEach((player, index) => {
-    document.getElementById(`player${index + 1}-name`).textContent =
-      data[index].username;
-    document.getElementById(`player${index + 1}-score`).textContent =
-      data[index].score;
+  sortedData.slice(0, 3).forEach((player, index) => {
+    document.getElementById(`player${index + 1}-name`).textContent = player.username;
+    document.getElementById(`player${index + 1}-score`).textContent = player.score;
   });
 }
 
@@ -133,7 +124,6 @@ async function register() {
     });
 
     const data = await response.json();
-    // console.log(`Register response: ${JSON.stringify(data)}`);
 
     if (response.ok) {
       showAlertServer("success", "Registration Successful", data.message);
@@ -143,7 +133,6 @@ async function register() {
       showAlertServer("error", "Registration Failed", data.error);
     }
   } catch (error) {
-    // console.error("Network error or unexpected issue:", data.error || error);
     showAlertServer(
       "error",
       "Registration Failed",
@@ -183,7 +172,6 @@ async function login() {
       usernameInput.value = "";
       passwordInput.value = "";
       window.userData = data;
-      // console.log("Login", window.userData);
       updateLRL({
         loggedIn: true,
         username: data.user.username,
@@ -194,7 +182,7 @@ async function login() {
       showAlertServer("error", "Login Failed", data.error);
     }
   } catch (error) {
-    console.error("Error:", data.error || error);
+    console.error("Error:", error);
     showAlertServer("error", "Login Failed", "An error occurred during login.");
   }
 }
@@ -207,8 +195,6 @@ async function logout() {
     });
 
     const data = await response.json();
-
-    console.log(`Logout response: ${JSON.stringify(data)}`);
 
     if (response.ok) {
       showAlertServer("success", "Logout Successful", data.message);
@@ -241,7 +227,6 @@ async function checkSession() {
 
     if (response.ok && data.loggedIn) {
       window.userData = data;
-      // console.log(`Session login`, window.userData);
       if (document.getElementById("score")) {
         document.getElementById("score").textContent = data.user.score;
       }
@@ -251,10 +236,6 @@ async function checkSession() {
         UID: data.user.UID,
         score: data.user.score,
       });
-
-      if (document.getElementById("score")) {
-        document.getElementById("score").textContent = data.user.score;
-      }
     } else {
       updateLRL(null);
     }
@@ -264,7 +245,6 @@ async function checkSession() {
 }
 
 function updateLRL(userData) {
-  // console.log("Updating LRL:", userData);
   const loginButton = document.getElementById("login-btn");
   const logoutButton = document.getElementById("logout-btn");
   const registerButton = document.getElementById("register-btn");
@@ -284,22 +264,8 @@ function updateLRL(userData) {
 }
 
 async function sendScoreToServer(score) {
-  if (!window.userData) {
-    window.userData.user = {
-      loggedIn: false,
-      username: "Guest",
-      UID: null,
-      score: 0,
-    };
-  }
-
-  if (window.userData.user.loggedIn === false) {
-    showAlertServer(
-      "warning",
-      "Not logged in",
-      "Please log in to submit your score."
-    );
-    console.log("User is not logged in.");
+  if (!window.userData?.user?.loggedIn) {
+    showAlertServer("warning", "Not logged in", "Please log in to submit your score.");
     return;
   }
 
@@ -314,21 +280,16 @@ async function sendScoreToServer(score) {
     const responseJson = await response.json();
 
     if (response.ok) {
-      console.log("Score submitted successfully:", responseJson);
       showAlertServer("success", "Score submitted", responseJson.message);
     } else {
-      console.error("Error submitting score:", responseJson);
       showAlertServer("error", "Error submitting score", responseJson.message);
     }
   } catch (error) {
     console.error("Error submitting score:", error);
-    showAlertServer(
-      "error",
-      "Error submitting score",
-      "An error occurred while submitting your score."
-    );
+    showAlertServer("error", "Error submitting score", "An error occurred while submitting your score.");
   }
 }
+
 window.onload = () => {
   loadLeaderboard();
   checkSession();
