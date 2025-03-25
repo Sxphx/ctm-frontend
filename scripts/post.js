@@ -1,7 +1,13 @@
+// const API_BASE_URL =
+//   window.location.hostname === "127.0.0.1"
+//     ? "http://127.0.0.1:3001"
+//     : "http://localhost:3001";
+
 const API_BASE_URL =
-  window.location.hostname === "127.0.0.1"
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === "localhost"
     ? "http://127.0.0.1:3001"
-    : "http://localhost:3001";
+    : "https://ctm-api.vercel.app/";
 
 function showAlertServer(type, topic, message) {
   const toastrOptions = {
