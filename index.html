@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@100..900&family=Pixelify+Sans:wght@400..700&display=swap"
+        rel="stylesheet">
+    <title>City Resource Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://kit-pro.fontawesome.com/releases/v6.4.0/css/pro.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="score p-2" style="position: absolute;">
+        <h2 style="color: tomato;">Username : <span id="usernameDisplay">Guest</span></h2>
+        <h3>Score: <span id="score">0</span></h3>
+        <h2>Action: <span id="action">0</span></h2>
+        <div class="btnrl" style="position: absolute;">
+            <button type="button" class="btn btn-green" id="login-btn" data-bs-toggle="modal"
+                data-bs-target="#loginModal">Login</button>
+            <button type="button" class="btn btn-yellow" id="register-btn" data-bs-toggle="modal"
+                data-bs-target="#registerModal">Register</button>
+            <button class="btn btn-red" id="logout-btn" onclick="logout()" style="display: none;">Logout</button>
+            <button class="btn btn-red" id="logout-btn" onclick="surrender()">Surrender</button>
+
+        </div>
+    </div>
+<style>.leaderboard h1 {
+    font-size: 3.5rem;
+  }</style>
+    <div class="leaderboard">
+        <h1>Leaderboard</h1>
+        <table>
+            <thead>
+                <tr style="text-align: center;">
+                    <th>#</th>
+                    <th>Username</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="first">
+                    <td><i class="fa-solid fa-crown"></i></td>
+                    <td><span id="player1-name">Player 1:</span></td>
+                    <td><span class="score" id="player1-score">100</span></td>
+                </tr>
+                <tr class="second">
+                    <td><i class="fa-solid fa-crown"></i></td>
+                    <td><span id="player2-name">Player 2:</span></td>
+                    <td><span class="score" id="player2-score">80</span></td>
+                </tr>
+                <tr class="third">
+                    <td><i class="fa-solid fa-crown"></i></td>
+                    <td><span id="player3-name">Player 3:</span></td>
+                    <td><span class="score" id="player3-score">60</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="leaderboard.html"><button class="btn btn-green" style="width: 100%;">All Score Board</button></a>
+
+    </div>
+
+
+    <div id="table-container" class="city-display mt-5">
+
+    </div>
+
+
+    <div id="menu-area">
+        <div class="resource-container">
+            <div class="resource">
+                <div class="resource-bar">
+                    <div id="water-bar" class="resource-level"></div>
+                    <div class="resource-bar-text"><i class="fa-solid fa-bottle-water"></i>&nbsp Water: <span
+                            id="water">100</span></div>
+                </div>
+            </div>
+
+            <div class="resource">
+                <div class="resource-bar">
+                    <div id="energy-bar" class="resource-level"></div>
+                    <div class="resource-bar-text"><i class="fa-solid fa-square-bolt"></i>&nbsp Energy: <span
+                            id="energy">100</span></div>
+                </div>
+            </div>
+
+            <div class="resource">
+                <div class="resource-bar">
+                    <div id="food-bar" class="resource-level"></div>
+                    <div class="resource-bar-text"><i class="fa-solid fa-bowl-food"></i>&nbsp Food: <span
+                            id="food">100</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="resource">
+                <div class="resource-bar">
+                    <div id="population-bar" class="resource-level"></div>
+                    <div class="resource-bar-text"><i class="fa-solid fa-person"></i>&nbsp Population: <span
+                            id="population">50</span></div>
+                </div>
+            </div>
+
+            <div class="resource">
+                <div class="resource-bar">
+                    <div id="money-bar" class="resource-level"></div>
+                    <div class="resource-bar-text"><i class="fa-solid fa-money-bills-simple"></i>&nbsp Money: <span
+                            id="money">100</span></div>
+                </div>
+            </div>
+
+            <div class="resource">
+                <div class="resource-bar">
+                    <div id="happiness-bar" class="resource-level"></div>
+                    <div class="resource-bar-text"><i class="fa-solid fa-face-smile-wink"></i>&nbsp Happy: <span
+                            id="happiness">100</span>%</div>
+                </div>
+            </div>
+
+
+        </div>
+        <div id="bottom-menu">
+            <button type="button" class="btn menu-btn" onclick="makeDecision('investWater')">Havest Water</button>
+            <button type="button" class="btn menu-btn" onclick="makeDecision('buildEnergy')">Havest Energy</button>
+            <button type="button" class="btn menu-btn" onclick="makeDecision('harvestFood')">Harvest Food</button>
+            <button type="button" class="btn menu-btn" onclick="makeDecision('expandCity')">Expand City</button>
+            <span class="menu-spacer"></span>
+            <button type="button" class="btn menu-btn" data-bs-toggle="modal"
+                data-bs-target="#researchModal">Research</button>
+            <button type="button" class="btn menu-btn" data-bs-toggle="modal"
+                data-bs-target="#buildingModal">Building</button>
+            <span class="menu-spacer"></span>
+            <button type="button" class="btn menu-btn" data-bs-toggle="modal"
+                data-bs-target="#tradeModal">Trade</button>
+            <span class="menu-spacer"></span>
+            <button type="button" class="btn menu-btn" data-bs-toggle="modal"
+                data-bs-target="#guideModal">Guide</button>
+        </div>
+    </div>
+
+    <div class="modal fade" id="gameOverModal" tabindex="-1" role="dialog" aria-labelledby="gameOverModalLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="gameOverModalLabel">Game Over!</h5>
+                </div>
+                <div class="modal-body">
+                    <p id="game-over-reason" class="text-danger"></p>
+                    <p>Your final score was: <span id="final-score"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-red" data-bs-dismiss="modal" onclick="restart()"><i
+                            class="fa-solid fa-rotate-right"></i> Restart </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-lg" id="researchModal" tabindex="-1" role="dialog" aria-labelledby="guideModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="guideModalLabel">Research</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body-research">
+                    <p>Tech Points: <span id="researchPoint">0</span><i class="fa-solid fa-dna"></i> &nbsp </p>
+                    <div id="research-list">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-red" data-bs-dismiss="modal"><i
+                            class="fa-regular fa-xmark"></i> &nbsp </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-lg" id="buildingModal" tabindex="-1" role="dialog" aria-labelledby="guideModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="guideModalLabel">Buildings</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="building-list">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-red" data-bs-dismiss="modal"><i
+                            class="fa-regular fa-xmark"></i> &nbsp </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-lg" id="tradeModal" tabindex="-1" role="dialog" aria-labelledby="guideModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="guideModalLabel">Trade</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="trade-list">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Sell Water</h5>
+                                        <p class="card-text">Trade Rate :</br> 1 Water : <span
+                                                id="trade-water-rate"></span> Money <i
+                                                class="fa-solid fa-money-bills-simple"></i> &nbsp </p>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" data-bs-target="#tradePopupModal"
+                                                onclick="tradePopup('water')">
+                                                <i class="fa-solid fa-bottle-water"></i> &nbsp Sell Water
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Sell Energy</h5>
+                                        <p class="card-text">Trade Rate :</br> 1 Energy : <span
+                                                id="trade-energy-rate"></span> Money <i
+                                                class="fa-solid fa-money-bills-simple"></i> &nbsp </p>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" data-bs-target="#tradePopupModal"
+                                                onclick="tradePopup('energy')">
+                                                <i class="fa-solid fa-square-bolt"></i> &nbsp Sell Energy
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Sell Food</h5>
+                                        <p class="card-text">Trade Rate :</br> 1 Food : <span
+                                                id="trade-food-rate"></span> Money <i
+                                                class="fa-solid fa-money-bills-simple"></i> &nbsp </p>
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" data-bs-target="#tradePopupModal"
+                                                onclick="tradePopup('food')">
+                                                <i class=" fa-solid fa-bowl-food"></i> &nbsp Sell Food
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-red" data-bs-dismiss="modal"><i
+                            class="fa-regular fa-xmark"></i> &nbsp </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="tradePopupModal" tabindex="-1" role="dialog" aria-labelledby="tradePopupLabel"
+        aria-hidden="true" style="padding: 15px; background-color: #80808042;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tradePopupLabel">Trade <span id="typeTrade"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="trade-popup-content">
+                    <input type="hidden" id="typeOfTrade" value="">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="trade-amount" min="2" placeholder="Enter amount">
+                        <span class="input-group-text" id="trade-rate"></span>
+                    </div>
+                    <p id="trade-total" class="text-muted">Total: <span id="trade-total-value"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-green" data-bs-dismiss="modal" onclick="tradeConfirm(
+                        document.getElementById('trade-amount').value,
+                        document.getElementById('typeOfTrade').value)">
+                        Confirm
+                    </button>
+                    <button type="button" class="btn btn-red" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="loginUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="loginUsername" value="test3" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="loginPassword" value="123456" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-red" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-green" onclick="login()">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerModalLabel">Register</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerForm">
+                        <div class="mb-3">
+                            <label for="registerUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="registerUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="registerPassword" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-red" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-green" onclick="register()">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <script src="scripts/post.js"></script>
+    <script src="scripts/stats.js"></script>
+    <script src="scripts/reseacrh.js"></script>
+    <script src="scripts/main.js"></script>
+    <script src="scripts/func.js"></script>
+    <script src="scripts/toastr.js"></script>
+    <script src="scripts/building.js"></script>
+    <script src="scripts/trade.js"></script>
+    <script src="scripts/event.js"></script>
